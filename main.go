@@ -21,9 +21,10 @@ func findWords(filename string) error {
 
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanWords)
-	pattern := regexp.MustCompile(`^[бвгґджзклмнпрстфхцчшщБВГҐДЖЗКЛМНПРСТФХЦЧШЩ][а-яА-Я]*[бвгґджзклмнпрстфхцчшщБВГҐДЖЗКЛМНПРСТФХЦЧШЩ]$`)
+	pattern := regexp.MustCompile(`(?i)^[бвгґджзклмнпрстфхцчшщ][а-яіїєґ]*[бвгґджзклмнпрстфхцчшщ]$`)
 	for scanner.Scan() {
 		word := scanner.Text()
+		word = cleanWord(word)
 		matches := pattern.FindAllString(word, -1)
 		for _, match := range matches {
 			fmt.Println("Слово починається та закінчується приголосною:", match)
@@ -35,4 +36,9 @@ func findWords(filename string) error {
 	}
 
 	return nil
+}
+
+func cleanWord(word string) string {
+	reg, _ := regexp.Compile(`[^\p{L}]`)
+	return reg.ReplaceAllString(word, "")
 }
